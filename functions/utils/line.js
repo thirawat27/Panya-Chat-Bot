@@ -1,5 +1,4 @@
-const axios = require("axios");
-
+const axios = require("axios"); // requrie module axios
 const LINE_HEADER = {
   "Content-Type": "application/json",
   Authorization: `Bearer ${process.env.CHANNEL_ACCESS_TOKEN}`
@@ -9,7 +8,7 @@ const getImageBinary = async (messageId) => {
   const originalImage = await axios({
     method: "get",
     headers: LINE_HEADER,
-    url: `https://api-data.line.me/v2/bot/message/${messageId}/content`,
+    url: `https://api-data.line.m e/v2/bot/message/${messageId}/content`,
     responseType: "arraybuffer"
   })
   return originalImage.data;

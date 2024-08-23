@@ -2,24 +2,21 @@ const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory  } = require("@goog
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
 const textOnly = async (prompt) => {
-  // For text-only input, use the gemini-pro model
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent(prompt);
   return result.response.text();
 };
 
-const multimodal = async (imageBinary) => {
-  // For text-and-image input (multimodal), use the gemini-pro-vision model
-  const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-  const prompt = "ช่วยบรรยายภาพนี้ให้หน่อย";
-  const mimeType = "image/png";
+const multimodal = async (fileBinary, fileType = "image/png") => {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const prompt = "Extract text from this file:"; // ปรับ prompt ให้เป็นภาษาไทยตามความต้องการ
 
-  // Convert image binary to a GoogleGenerativeAI.Part object.
-  const imageParts = [
+  // แปลงไฟล์ binary เป็น GoogleGenerativeAI.Part object
+  const fileParts = [
     {
       inlineData: {
-        data: Buffer.from(imageBinary, "binary").toString("base64"),
-        mimeType
+        data: Buffer.from(fileBinary, "binary").toString("base64"),
+        mimeType: fileType
       }
     }
   ];
@@ -42,16 +39,14 @@ const multimodal = async (imageBinary) => {
       threshold: HarmBlockThreshold.BLOCK_ONLY_MEDIUM,
     },
   ];
-  
 
-  const result = await model.generateContent([prompt, ...imageParts], safetySettings);
+  const result = await model.generateContent([prompt, ...fileParts], safetySettings);
   const text = result.response.text();
   return text;
 };
 
 const chat = async (prompt) => {
-  // For text-only input, use the gemini-pro model
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const chat = model.startChat({
     history: [
       {
@@ -60,7 +55,7 @@ const chat = async (prompt) => {
       },
       {
         role: "model",
-        parts: [{ text: "สวัสดีครับ Panya Bot ผมเป็นผู้ช่วยเกี่ยวกับการสรุปเนื้อหาของคุณ" }],
+        parts: [{ text: "สวัสดีครับผมคือ Panya Bot ผมเป็นผู้ช่วยเกี่ยวกับการสรุปเนื้อหาของคุณ" }],
       },
     ]
   });

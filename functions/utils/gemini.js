@@ -10,7 +10,7 @@ class Gemini {
   }
 
   // ฟังก์ชันสำหรับการสร้างเนื้อหาหลายรูปแบบ (ข้อความ + รูปภาพ)
-async multimodal(base64Image) {
+  async multimodal(base64Image) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // ใช้โมเดล gemini-1.5-flash
     const prompt = "Extract the text from the attached image and summarize the key information present in the text, responding in Thai."; // กำหนดค่า prompt
     const mimeType = "image/png"; // กำหนดประเภท MIME ของรูปภาพเป็น PNG
@@ -21,7 +21,7 @@ async multimodal(base64Image) {
     
     const result = await model.generateContent([prompt, ...imageParts]); // สร้างเนื้อหาจาก prompt และรูปภาพ
     return result.response.text(); // ส่งกลับข้อความที่สร้างขึ้น
-}
+  }
 
 /* const multimodal = async (imageBinary) => {
   

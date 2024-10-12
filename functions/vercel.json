@@ -1,16 +1,11 @@
 {
-  "version": 2,
-  "builds": [
+    "version": 2,
+    "routes": [
       {
-          "src": "./index.js",
-          "use": "@vercel/node"
+        "src": "/webhook",
+        "methods": ["POST"],
+        "dest": "index.js"
       }
-  ],
-  "routes": [
-      {
-          "src": "/webhook",
-          "methods": ["POST"],
-          "dest": "index.js"
-      }
-  ]
-}
+    ]
+  }
+  

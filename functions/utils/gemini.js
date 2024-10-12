@@ -23,29 +23,6 @@ class Gemini {
     return result.response.text(); // ส่งกลับข้อความที่สร้างขึ้น
   }
 
-/* const multimodal = async (imageBinary) => {
-  
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = "Extract the text from the attached image, and summarize the key information contained in that text.";
-  const mimeType = "image/png";
-
-  
-  const imageParts = [
-    {
-      inlineData: {
-        data: Buffer.from(imageBinary, "binary").toString("base64"),
-        mimeType
-      }
-    }
-  ];
-
-  const result = await model.generateContent([prompt, ...imageParts]);
-  const text = result.response.text();
-  return text;
-}; 
-
-*/
-
   // ฟังก์ชันสำหรับการสนทนา โดยมีการเก็บประวัติการสนทนา
   async chat(cacheChatHistory, prompt) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // ใช้โมเดล gemini-1.5-flash

@@ -14,7 +14,7 @@ class Gemini {
   // ฟังก์ชันสำหรับการสร้างเนื้อหาหลายรูปแบบ (ข้อความ + รูปภาพ)
   async multimodal(base64Image) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // ใช้โมเดล gemini-1.5-flash
-    const prompt = "Extract the text from the attached image and summarize the key information present in the text, responding in Thai."; // กำหนดค่า prompt
+    const prompt = "Extract the text from the attached image and summarize the key information in Thai. Ensure the summary includes an engaging and relevant title. The summary should be concise, consisting of no more than 2 to 3 paragraphs, and should be clear."; // กำหนดค่า prompt
     const mimeType = "image/png"; // กำหนดประเภท MIME ของรูปภาพเป็น PNG
 
     const imageParts = [{
@@ -40,7 +40,7 @@ class Gemini {
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // ใช้โมเดล gemini-1.5-flash
-    const prompt = `Extract and summarize essential details from the following content, then respond in Thai.: ${content}`; // กำหนด prompt
+    const prompt = `Extract and summarize essential details from the following content or URL into 2 or 3 paragraphs with a concise title reflecting the main idea. Respond in Thai.: ${content}`; // กำหนด prompt
     
     const result = await model.generateContent(prompt); // สร้างเนื้อหาจาก prompt
     return result.response.text(); // ส่งกลับข้อความที่สร้างขึ้น

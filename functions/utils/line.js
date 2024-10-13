@@ -18,6 +18,7 @@ class LINE {
     });
     return originalImage.data; // ส่งกลับข้อมูลภาพที่ได้รับ
   }
+  
 
   // ฟังก์ชันสำหรับตอบกลับข้อความไปยังผู้ใช้
   reply(token, payload) {

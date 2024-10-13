@@ -19,39 +19,32 @@ exports.webhook = onRequest(async (req, res) => {
       case "message": // ถ้า event เป็นประเภท message
         if (event.message.type === "text") {
           // ถ้าข้อความเป็นประเภท text
-          const prompt = event.message.text.trim(); // ดึงข้อความที่ส่งมาและลดช่องว่าง
+          const prompt = event.message.text; // ดึงข้อความที่ส่งมา
           console.log("Prompt :", prompt);
 
           // ตรวจสอบการถามเพิ่มเติม
           const previousChat = cache.get(CACHE_CHAT + userId);
           if (previousChat) {
-            const combinedPrompt = `${previousChat} ${prompt}`.trim(); // รวมข้อความก่อนหน้าและข้อความปัจจุบัน
+            const combinedPrompt = `${previousChat} ${prompt}`; // รวมข้อความก่อนหน้าและข้อความปัจจุบัน
             const text = await gemini.textOnly(combinedPrompt); // ใช้ข้อความรวมในการสร้างข้อความใหม่
             console.log(`Tokens used for textOnly: ${combinedPrompt.length}`); // แสดงจำนวน token ที่ใช้
             await line.reply(event.replyToken, [{ type: "text", text }]);
             // อัปเดต cache ของการสนทนา
-            cache.set(CACHE_CHAT + userId, combinedPrompt, 30); // เก็บข้อความรวมใน cache เป็นเวลา 30 วินาที
+            cache.set(CACHE_CHAT + userId, combinedPrompt, 60); // เก็บข้อความรวมใน cache เป็นเวลา 1 นาที
             break;
           }
 
-          // เช็คแคชก่อนเรียกใช้ API
-          const cachedResponse = cache.get(CACHE_CHAT + userId + prompt);
-          if (cachedResponse) {
-            // ถ้ามีข้อมูลในแคช ให้ใช้ข้อมูลจากแคชแทน
-            console.log(`Using cached response for: ${prompt}`);
-            await line.reply(event.replyToken, [{ type: "text", text: cachedResponse }]);
-            break;
-          }
-
-          // ตรวจสอบว่าข้อความเป็น URL หรือไม่
           if (prompt.startsWith("http://") || prompt.startsWith("https://")) {
+            // ถ้าข้อความเป็น URL
+            // ลบแคชเก่าทันที
             cache.del(CACHE_IMAGE + userId); // ลบแคชภาพเก่า
             cache.del(CACHE_CHAT + userId); // ลบแคชการสนทนาเก่า
 
             const generatedText = await gemini.urlToText(prompt); // เรียกฟังก์ชัน urlToText
             console.log(`Tokens used for urlToText: ${prompt.length}`); // แสดงจำนวน token ที่ใช้
             await line.reply(event.replyToken, [{ type: "text", text: generatedText }]); // ตอบกลับข้อความที่สร้างขึ้นจาก URL
-            cache.set(CACHE_CHAT + userId + prompt, generatedText, 30); // เก็บข้อความที่สร้างขึ้นจาก URL โดยมีระยะเวลา 30 วินาที
+            // เก็บข้อความใน cache
+            cache.set(CACHE_CHAT + userId, generatedText, 60); // เก็บข้อความที่สร้างขึ้นจาก URL โดยมีระยะเวลา 1 นาที
             break;
           }
 
@@ -61,7 +54,8 @@ exports.webhook = onRequest(async (req, res) => {
             const text2 = await gemini.multimodal(cacheImage); // ไม่ต้องรับ prompt จากผู้ใช้โดยตรง
             console.log(`Tokens used for multimodal: ${cacheImage.length}`); // แสดงจำนวน token ที่ใช้
             await line.reply(event.replyToken, [{ type: "text", text: text2 }]);
-            cache.set(CACHE_CHAT + userId, text2, 30); // เก็บข้อความที่สร้างขึ้นจากรูปภาพ
+            // อัปเดต cache ของการสนทนา
+            cache.set(CACHE_CHAT + userId, text2, 60); // เก็บข้อความที่สร้างขึ้นจากรูปภาพ
             break;
           }
 
@@ -69,7 +63,8 @@ exports.webhook = onRequest(async (req, res) => {
           const text = await gemini.textOnly(prompt);
           console.log(`Tokens used for textOnly: ${prompt.length}`); // แสดงจำนวน token ที่ใช้
           await line.reply(event.replyToken, [{ type: "text", text }]);
-          cache.set(CACHE_CHAT + userId + prompt, text, 30); // เก็บข้อความที่สร้างขึ้นใน cache
+          // เก็บข้อความใน cache
+          cache.set(CACHE_CHAT + userId, text, 60); // เก็บข้อความที่สร้างขึ้นใน cache
           break;
         }
 
@@ -91,7 +86,8 @@ exports.webhook = onRequest(async (req, res) => {
               text: generatedText, // ตอบกลับข้อความที่สร้างขึ้นจากรูปภาพ
             },
           ]);
-          cache.set(CACHE_CHAT + userId, generatedText, 30); // เก็บข้อความที่สร้างขึ้นจากรูปภาพ
+          // เก็บข้อความใน cache
+          cache.set(CACHE_CHAT + userId, generatedText, 60); // เก็บข้อความที่สร้างขึ้นจากรูปภาพ
           break;
         }
         break;

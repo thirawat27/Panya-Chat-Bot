@@ -86,7 +86,7 @@ exports.webhook = onRequest(async (req, res) => {
         }
       } catch (error) {
         console.error("Error processing event: ", error); // แสดงข้อผิดพลาดใน console
-        await line.reply(event.replyToken, [{ type: "text", text: "An error occurred. Please try again." }]); // ตอบกลับผู้ใช้เมื่อเกิดข้อผิดพลาด
+        await line.reply(event.replyToken, [{ type: "text", text: "เกิดข้อผิดพลาดลองใหม่อีกครั้งในภายหลัง" }]); // ตอบกลับผู้ใช้เมื่อเกิดข้อผิดพลาด
       }
     }
   }

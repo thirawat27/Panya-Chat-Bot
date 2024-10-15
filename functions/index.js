@@ -2,6 +2,7 @@ const { onRequest } = require("firebase-functions/v2/https"); // นำเข้
 const line = require("./utils/line"); // นำเข้าฟังก์ชันสำหรับจัดการกับ LINE API
 const gemini = require("./utils/gemini"); // นำเข้าฟังก์ชันสำหรับจัดการกับ Gemini API
 const NodeCache = require("node-cache"); // นำเข้า NodeCache สำหรับจัดการ cache
+const sharp = require("sharp"); // นำเข้า sharp สำหรับจัดการกับภาพ
 
 const cache = new NodeCache(); // สร้างอินสแตนซ์ของ NodeCache
 const CACHE_IMAGE = "image_"; // ค่าคงที่สำหรับการจัดเก็บ cache ของภาพ
@@ -71,7 +72,11 @@ exports.webhook = onRequest(async (req, res) => {
 
         if (event.message.type === "image") { // ถ้าข้อความเป็นประเภท image
           const ImageBinary = await line.getImageBinary(event.message.id); // ดึงข้อมูลภาพ
-          const ImageBase64 = Buffer.from(ImageBinary, "binary").toString("base64"); // แปลงข้อมูลภาพเป็น Base64
+          const ImageBase64 = await sharp(ImageBinary)
+            .toFormat('jpeg', { quality: 80 }) // บีบอัดภาพเป็น JPEG คุณภาพ 80%
+            .toBuffer() // เปลี่ยนผลลัพธ์เป็น buffer
+            .then(data => data.toString('base64')); // แปลงเป็น base64 หลังบีบอัด
+
           cache.set(CACHE_IMAGE + userId, ImageBase64, 30); // เก็บภาพใน cache
 
           const generatedText = await gemini.multimodal(ImageBase64); // เรียก multimodal โดยไม่ต้องรับ prompt จากผู้ใช้

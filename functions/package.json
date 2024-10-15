@@ -17,7 +17,8 @@
     "firebase-admin": "^12.6.0",
     "firebase-functions": "^6.0.1",
     "node-cache": "^5.1.2",
-    "puppeteer": "^23.5.3"
+    "puppeteer": "^23.5.3",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.3.0"

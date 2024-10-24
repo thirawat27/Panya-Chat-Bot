@@ -2,6 +2,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const line = require("./utils/line");
 const gemini = require("./utils/gemini");
 const sharp = require("sharp");
+const axios = require("axios");
 
 // ฟังก์ชัน webhook ที่ถูกเรียกใช้เมื่อมีการส่ง request มายัง endpoint นี้
 exports.webhook = onRequest(async (req, res) => {
@@ -9,6 +10,9 @@ exports.webhook = onRequest(async (req, res) => {
   for (const event of events) {
     const userId = event.source.userId;
     console.log("User ID : ", userId);
+
+    // เริ่มการโหลดก่อนดำเนินการต่อ
+    await line.loading(userId);
 
     if (event.type === "message") {
       try {

@@ -19,7 +19,6 @@ class LINE {
     return originalImage.data; // ส่งกลับข้อมูลภาพที่ได้รับ
   }
   
-
   // ฟังก์ชันสำหรับตอบกลับข้อความไปยังผู้ใช้
   reply(token, payload) {
     // ทำการเรียก API เพื่อตอบกลับข้อความ
@@ -28,6 +27,16 @@ class LINE {
       url: "https://api.line.me/v2/bot/message/reply", // URL สำหรับการตอบกลับข้อความ
       headers: LINE_HEADER, // ใส่ headers ที่กำหนดไว้
       data: { replyToken: token, messages: payload } // กำหนดข้อมูลที่ส่งไป รวมถึง replyToken และข้อความที่จะส่ง
+    });
+  }
+
+  // ฟังก์ชันสำหรับเริ่มการโหลด
+  loading(userId) {
+    return axios({
+      method: "post", // กำหนดวิธีการเรียก POST
+      url: "https://api.line.me/v2/bot/chat/loading/start", // URL สำหรับการเริ่มการโหลด
+      headers: LINE_HEADER, // ใส่ headers ที่กำหนดไว้
+      data: { chatId: userId } // ส่งค่า chatId ของผู้ใช้
     });
   }
 }
